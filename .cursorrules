@@ -11,8 +11,9 @@
   ],
   "steps": [
     "Start with storyboarding",
+    "Create empty component in components folder",
     "Create documentation in Design System",
-    "Implement the UI of the component and add to Design System"
+    "Implement the component"
   ],
   "technicalGuidelines": [
     "Design system is documented under `pages` folder, see example in pages/components/button.vue",
