@@ -1,8 +1,4 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: 'design',
-})
-
 const fontSizes = [
   { name: 'text-xs', size: '0.75rem', example: 'Extra small text' },
   { name: 'text-sm', size: '0.875rem', example: 'Small text' },

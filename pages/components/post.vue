@@ -1,8 +1,4 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: 'design',
-})
-
 import { mockPosts } from '~/data/mockPosts'
 import Post from '~/components/post/Post.vue'
 

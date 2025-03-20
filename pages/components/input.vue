@@ -1,8 +1,4 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: 'design',
-})
-
 const variants = [
   { name: 'default', description: 'Default input style' },
   {

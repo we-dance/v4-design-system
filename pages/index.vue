@@ -1,8 +1,4 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: 'design',
-})
-
 import { designConfig } from '~/config/design'
 
 const sections = [

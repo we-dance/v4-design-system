@@ -1,8 +1,4 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: 'design',
-})
-
 /* Safelist:
 bg-background bg-foreground text-background text-foreground
 bg-primary bg-primary-foreground text-primary text-primary-foreground

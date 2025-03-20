@@ -4,12 +4,12 @@ export const designConfig = {
     description: 'Core design tokens and primitives',
     items: [
       {
-        to: '/design/colors',
+        to: '/colors',
         label: 'Colors',
         description: 'Color system and semantic tokens',
       },
       {
-        to: '/design/typography',
+        to: '/typography',
         label: 'Typography',
         description: 'Font families, sizes, and weights',
       },
@@ -23,17 +23,17 @@ export const designConfig = {
         label: 'UI Components',
         items: [
           {
-            to: '/design/components/button',
+            to: '/components/button',
             label: 'Button',
             description: 'Actions and links',
           },
           {
-            to: '/design/components/input',
+            to: '/components/input',
             label: 'Input',
             description: 'Form controls and fields',
           },
           {
-            to: '/design/components/dialog',
+            to: '/components/dialog',
             label: 'Dialog',
             description: 'Modal windows and overlays',
           },
@@ -43,22 +43,22 @@ export const designConfig = {
         label: 'Domain Components',
         items: [
           {
-            to: '/design/components/post',
+            to: '/components/post',
             label: 'Post',
             description: 'Content display for events and social posts',
           },
           {
-            to: '/design/components/profile',
+            to: '/components/profile',
             label: 'Profile',
             description: 'User profiles and cards',
           },
           {
-            to: '/design/components/event',
+            to: '/components/event',
             label: 'Event',
             description: 'Dance event details and actions',
           },
           {
-            to: '/design/components/venue',
+            to: '/components/venue',
             label: 'Venue',
             description: 'Dance venue information',
           },
@@ -71,19 +71,30 @@ export const designConfig = {
     description: 'Common UI patterns and solutions',
     items: [
       {
-        to: '/design/patterns/forms',
+        to: '/patterns/forms',
         label: 'Forms',
         description: 'Form layouts and validation',
       },
       {
-        to: '/design/patterns/navigation',
+        to: '/patterns/navigation',
         label: 'Navigation',
         description: 'Navigation patterns and menus',
       },
       {
-        to: '/design/patterns/loading',
+        to: '/patterns/loading',
         label: 'Loading States',
         description: 'Loading and error states',
+      },
+    ],
+  },
+  emails: {
+    label: 'Emails',
+    description: 'Email templates and components',
+    items: [
+      {
+        to: '/emails/welcome',
+        label: 'Welcome Email',
+        description: 'Welcome email template and components',
       },
     ],
   },

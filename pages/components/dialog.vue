@@ -1,8 +1,4 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: 'design',
-})
-
 const isOpen = ref(false)
 const isDestructiveOpen = ref(false)
 const isFormOpen = ref(false)
