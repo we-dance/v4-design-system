@@ -324,7 +324,7 @@ const sendTestEmail = testEmailForm.handleSubmit(
         </div>
       </div>
 
-      <div class="bg-white p-8 max-w-2xl mx-auto">
+      <div class="bg-background text-foreground p-8 max-w-2xl mx-auto">
         <div class="mb-6">
           <WeDanceLogo class="h-12 w-auto" />
         </div>
