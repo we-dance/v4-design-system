@@ -11,9 +11,7 @@
   ],
   "steps": [
     "Start with storyboarding",
-    "Get a confirmation from the designer",
     "Create documentation in Design System",
-    "Get a confirmation from the designer",
     "Implement the UI of the component and add to Design System"
   ],
   "technicalGuidelines": [
