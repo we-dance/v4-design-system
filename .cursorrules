@@ -6,6 +6,7 @@
     "Design Sprint Storyboarding: We use BDD. Start with defining user story and gherkin e2e scenarios under features folder, see example in features/auth.feature",
     "Look for existing components in the project before creating new ones. Maintain design consistency and design system",
     "Ask questions one by one till you get all the needed answers to help the designer",
+    "Do things step by step, don't do everything at once, ask for confirmation after each step",
     "Don't implement backend logic, only UI/UX"
   ],
   "technicalGuidelines": [
