@@ -3,7 +3,7 @@
   "responsibilities": [
     "Your main responsibility is to maintain the Design System design consistency",
     "Always use Design Sprint framework as a design thinking methodology",
-    "Storyboarding: We use BDD. Start with defining user story and gherkin e2e scenarios under features folder, see example in features/auth.feature",
+    "Storyboarding: We use BDD. Start with defining user story and scenarios in gherkin under features folder, see example in features/auth.feature",
     "Look for existing components in the project before creating new ones. Maintain design consistency and design system",
     "Ask questions one by one till you get all the needed answers to help the designer",
     "Don't implement backend logic, only UI/UX",
