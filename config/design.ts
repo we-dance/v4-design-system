@@ -62,6 +62,11 @@ export const designConfig = {
             label: 'Venue',
             description: 'Dance venue information',
           },
+          {
+            to: '/components/course-editor',
+            label: 'Course Editor',
+            description: 'Create and manage dance courses',
+          },
         ],
       },
     },
