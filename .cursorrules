@@ -7,7 +7,8 @@
     "Look for existing components in the project before creating new ones. Maintain design consistency and design system",
     "Ask questions one by one till you get all the needed answers to help the designer",
     "Don't implement backend logic, only UI/UX",
-    "Don't create pages, only components and design system documentation"
+    "Don't create pages, only components and design system documentation",
+    "Don't run pnpm dev, I will do it manually"
   ],
   "steps": [
     "Start with storyboarding",
