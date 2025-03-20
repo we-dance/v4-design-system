@@ -4,7 +4,7 @@ import { designConfig } from '~/config/design'
 
 <template>
   <div class="min-h-screen bg-background text-foreground">
-    <div class="border-b sticky top-0 z-50 shadow-sm">
+    <div class="border-b sticky top-0 z-50 shadow-sm bg-background">
       <div class="container flex h-16 items-center px-4 space-x-2">
         <NuxtLink to="/" class="mr-6 flex items-center">
           <span class="font-bold">WeDance</span>
