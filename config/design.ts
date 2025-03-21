@@ -13,6 +13,16 @@ export const designConfig = {
         label: 'Typography',
         description: 'Font families, sizes, and weights',
       },
+      {
+        to: '/icons',
+        label: 'Icons',
+        description: 'Icon system and usage guidelines',
+      },
+      {
+        to: '/grid',
+        label: 'Grid System',
+        description: 'Layout grid, columns, gutters, and containers',
+      },
     ],
   },
   components: {
@@ -36,6 +46,22 @@ export const designConfig = {
             to: '/components/dialog',
             label: 'Dialog',
             description: 'Modal windows and overlays',
+          },
+          {
+            to: '/components/checkbox',
+            label: 'Checkbox',
+            description:
+              'Checkbox component for forms and interactive elements',
+          },
+          {
+            to: '/components/radio',
+            label: 'Radio',
+            description: 'Radio button component for single selection options',
+          },
+          {
+            to: '/components/avatar',
+            label: 'Avatar',
+            description: 'User profile picture or initials',
           },
         ],
       },
