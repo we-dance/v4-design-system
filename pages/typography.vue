@@ -91,6 +91,39 @@ const lineHeights = [
       </div>
     </section>
 
+    <!-- Code Typography -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-8">Code Typography</h2>
+      <p class="text-muted-foreground mb-6">
+        Code-related elements use Roboto Mono as the monospace font family with consistent styling.
+      </p>
+      <div class="space-y-8">
+        <div class="grid grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-lg font-medium mb-4">Inline Code</h3>
+            <p class="mb-2">Example with <code>inline code</code> in a sentence.</p>
+            <p class="text-sm text-muted-foreground">Font size: 0.8em</p>
+          </div>
+          <div>
+            <h3 class="text-lg font-medium mb-4">Keyboard Input</h3>
+            <p class="mb-2">Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to copy.</p>
+            <p class="text-sm text-muted-foreground">Font size: 0.8em</p>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium mb-4">Code Block</h3>
+          <pre class="bg-muted p-4 rounded-lg overflow-x-auto">const greeting = "Hello, World!";
+console.log(greeting);</pre>
+          <p class="text-sm text-muted-foreground mt-2">Font size: 0.8em</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium mb-4">Sample Output</h3>
+          <samp class="bg-muted p-4 rounded-lg block">Hello, World!</samp>
+          <p class="text-sm text-muted-foreground mt-2">Font size: 0.8em</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Font Features -->
     <section class="mb-16">
       <h2 class="text-2xl font-semibold mb-8">Font Features</h2>

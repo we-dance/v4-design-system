@@ -17,148 +17,112 @@ bg-gradient-base bg-gradient-1 bg-gradient-2 bg-gradient-3
 
 const colorGroups = [
   {
-    name: 'Base',
-    colors: [
-      {
-        name: 'background',
-        description: 'Default page background',
-      },
-      {
-        name: 'foreground',
-        description: 'Default text color',
-      },
-    ],
-  },
-  {
-    name: 'Components',
+    name: 'Base Colors',
+    description: 'Core colors that form the foundation of our design system.',
     colors: [
       {
         name: 'primary',
-        description: 'Primary brand color for key elements',
-      },
-      {
-        name: 'primary-foreground',
-        description: 'Text color on primary background',
+        description: 'Main brand color used for primary actions and key visual elements',
+        variants: ['DEFAULT', 'foreground'],
       },
       {
         name: 'secondary',
-        description: 'Secondary color for less prominent elements',
-      },
-      {
-        name: 'secondary-foreground',
-        description: 'Text color on secondary background',
+        description: 'Secondary brand color for less prominent elements',
+        variants: ['DEFAULT', 'foreground'],
       },
       {
         name: 'accent',
         description: 'Accent color for highlights and emphasis',
+        variants: ['DEFAULT', 'foreground'],
+      },
+    ],
+  },
+  {
+    name: 'Semantic Colors',
+    description: 'Colors that carry specific meaning and purpose.',
+    colors: [
+      {
+        name: 'background',
+        description: 'Page and component background color',
+        variants: ['DEFAULT'],
       },
       {
-        name: 'accent-foreground',
-        description: 'Text color on accent background',
+        name: 'foreground',
+        description: 'Default text color',
+        variants: ['DEFAULT'],
       },
       {
         name: 'muted',
-        description: 'Muted color for subtle backgrounds',
-      },
-      {
-        name: 'muted-foreground',
-        description: 'Text color on muted background',
+        description: 'Subtle background and text colors',
+        variants: ['DEFAULT', 'foreground'],
       },
     ],
   },
   {
-    name: 'Status',
+    name: 'Status Colors',
+    description: 'Colors that communicate state and feedback.',
     colors: [
       {
-        name: 'destructive',
-        description: 'Color for error states and destructive actions',
-      },
-      {
-        name: 'destructive-foreground',
-        description: 'Text color on destructive background',
-      },
-      {
         name: 'success',
-        description: 'Color for success states and confirmations',
-      },
-      {
-        name: 'success-foreground',
-        description: 'Text color on success background',
+        description: 'Positive actions and success states',
+        variants: ['DEFAULT', 'foreground'],
       },
       {
         name: 'warning',
-        description: 'Color for warning states and alerts',
+        description: 'Cautionary actions and warning states',
+        variants: ['DEFAULT', 'foreground'],
       },
       {
-        name: 'warning-foreground',
-        description: 'Text color on warning background',
+        name: 'destructive',
+        description: 'Dangerous actions and error states',
+        variants: ['DEFAULT', 'foreground'],
       },
       {
         name: 'info',
-        description: 'Color for informational messages',
-      },
-      {
-        name: 'info-foreground',
-        description: 'Text color on info background',
+        description: 'Informational states and help content',
+        variants: ['DEFAULT', 'foreground'],
       },
     ],
   },
   {
-    name: 'UI Elements',
+    name: 'Component Colors',
+    description: 'Specific colors for UI components and patterns.',
     colors: [
       {
         name: 'card',
-        description: 'Background color for card components',
-      },
-      {
-        name: 'card-foreground',
-        description: 'Text color on card background',
+        description: 'Colors for card components',
+        variants: ['DEFAULT', 'foreground'],
       },
       {
         name: 'popover',
-        description: 'Background color for popovers and dropdowns',
+        description: 'Colors for floating elements like popovers and dropdowns',
+        variants: ['DEFAULT', 'foreground'],
       },
-      {
-        name: 'popover-foreground',
-        description: 'Text color on popover background',
-      },
-    ],
-  },
-  {
-    name: 'Utility',
-    colors: [
       {
         name: 'border',
         description: 'Color for borders and dividers',
+        variants: ['DEFAULT'],
       },
       {
         name: 'input',
-        description: 'Background color for input fields',
+        description: 'Color for form inputs',
+        variants: ['DEFAULT'],
       },
       {
         name: 'ring',
         description: 'Color for focus rings and outlines',
+        variants: ['DEFAULT'],
       },
     ],
   },
   {
-    name: 'Gradients',
+    name: 'Data Visualization',
+    description: 'Colors specifically designed for charts and data visualization.',
     colors: [
       {
-        name: 'gradient-base',
-        description: 'Base gradient color',
-      },
-      {
-        name: 'gradient-1',
-        description: 'First accent gradient color',
-      },
-      {
-        name: 'gradient-2',
-        description: 'Second accent gradient color',
-      },
-      {
-        name: 'gradient-3',
-        description: 'Third accent gradient color',
+        name: 'chart',
+        description: 'Colors for data visualization',
+        variants: ['1', '2', '3', '4', '5'],
       },
     ],
   },
@@ -166,29 +130,43 @@ const colorGroups = [
 </script>
 
 <template>
-  <div>
-    <h1 class="text-3xl font-bold mb-16">Colors</h1>
-
+  <div class="max-w-[1200px] mx-auto px-6">
+    <h1 class="text-4xl font-bold mb-6">Color System</h1>
+    
     <!-- Introduction -->
-    <section class="mb-16">
-      <p class="text-lg text-muted-foreground">
-        Our color system is built with semantic tokens that provide consistent
-        theming across light and dark modes. Instead of using raw color values,
-        we use semantic names that describe the purpose of each color.
+    <section class="mb-12">
+      <p class="text-lg text-muted-foreground leading-relaxed">
+        Our color system follows atomic design principles, organizing colors from fundamental atoms to complete page-level applications. 
+        Each color is designed to be accessible and maintain consistency across light and dark modes through semantic naming conventions.
       </p>
     </section>
 
     <!-- Color Groups -->
-    <div class="space-y-16">
-      <section v-for="group in colorGroups" :key="group.name">
-        <h2 class="text-2xl font-semibold mb-8">{{ group.name }}</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <ColorSwatch
+    <div class="space-y-20">
+      <section v-for="group in colorGroups" :key="group.name" class="rounded-lg p-6 bg-card">
+        <div class="mb-6">
+          <h2 class="text-2xl font-semibold mb-2">{{ group.name }}</h2>
+          <p class="text-muted-foreground">{{ group.description }}</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
             v-for="color in group.colors"
             :key="color.name"
-            :name="color.name"
-            :description="color.description"
-          />
+            class="space-y-4"
+          >
+            <h3 class="text-lg font-medium capitalize">{{ color.name }}</h3>
+            <p class="text-sm text-muted-foreground">{{ color.description }}</p>
+            <div class="space-y-2">
+              <ColorSwatch
+                v-for="variant in color.variants"
+                :key="`${color.name}-${variant}`"
+                :name="`${color.name}${variant !== 'DEFAULT' ? `-${variant}` : ''}`"
+                :description="`${color.name} ${variant !== 'DEFAULT' ? variant : ''}`"
+                class="mb-2"
+              />
+            </div>
+          </div>
         </div>
       </section>
     </div>

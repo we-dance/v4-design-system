@@ -13,6 +13,14 @@
     @apply dark:border-border;
   }
 
+  /* Code-related elements styling */
+  code, kbd, samp, pre {
+    font-family: 'Roboto Mono', monospace;
+    font-feature-settings: normal;
+    font-variation-settings: normal;
+    font-size: 0.8em;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 12%;
