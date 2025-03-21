@@ -108,6 +108,60 @@ import { ref } from 'vue'
     </ul>
 
     <h2
+      id="user-flow"
+      class="scroll-m-20 text-2xl font-semibold tracking-tight mt-12"
+    >
+      User Flow
+    </h2>
+    <CourseEditorFlow />
+
+    <div class="mt-8 space-y-4">
+      <p class="text-muted-foreground">
+        The course editing flow begins from the Teacher Dashboard where an
+        instructor can create a new course or edit an existing one. The Course
+        Editor interface consists of three main sections:
+      </p>
+
+      <ol class="list-decimal pl-5 space-y-2">
+        <li>
+          <span class="font-medium">Course Details</span> – Where instructors
+          enter basic information like course name, description, and difficulty
+          level.
+        </li>
+        <li>
+          <span class="font-medium">Course Structure</span> – For organizing
+          content into modules and lessons:
+          <ul class="list-disc pl-5 mt-1">
+            <li>Instructors can add, edit, or remove modules</li>
+            <li>Within each module, they can add, edit, or remove lessons</li>
+            <li>Lessons include title and duration settings</li>
+          </ul>
+        </li>
+        <li>
+          <span class="font-medium">Pricing</span> – For setting subscription
+          options:
+          <ul class="list-disc pl-5 mt-1">
+            <li>Monthly price and currency selection</li>
+          </ul>
+        </li>
+      </ol>
+
+      <p class="text-muted-foreground">
+        When saving a course, validation checks ensure all required information
+        is provided. If validation fails, the instructor is returned to the
+        editor with error messages. Upon successful validation, a success
+        message is displayed and the course is saved as a draft. From the drafts
+        section, instructors can return to edit their courses or publish them
+        when ready.
+      </p>
+
+      <p class="text-muted-foreground">
+        The Cancel action allows instructors to exit the editor and return to
+        the dashboard without saving changes.
+      </p>
+    </div>
+
+    <h2
       id="events"
       class="scroll-m-20 text-2xl font-semibold tracking-tight mt-12"
     >
