@@ -37,6 +37,11 @@ export const designConfig = {
             label: 'Dialog',
             description: 'Modal windows and overlays',
           },
+          {
+            to: '/components/subscription-plan',
+            label: 'Subscription Plan',
+            description: 'Plan comparison and management',
+          },
         ],
       },
       domain: {
