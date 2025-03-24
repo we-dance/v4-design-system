@@ -4,25 +4,46 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { toast } from 'vue-sonner'
 import { subscriptionUpdateSchema } from '~/schemas/subscription'
 import { 
-  mockSubscriptionPlans, 
-  mockUserSubscription, 
+  mockSubscriptionPlans,
+  mockCourseSubscriptions,
   type SubscriptionPlan 
 } from '~/data/mockSubscriptions'
 
-const billingCycle = ref<'monthly' | 'annually'>('monthly')
-const selectedPlanId = ref(mockUserSubscription.planId)
+const props = defineProps({
+  courseId: {
+    type: String,
+    required: true
+  }
+})
+
+// Initialize subscriptions from mock data
+const courseSubscriptions = ref(mockCourseSubscriptions)
+
+const selectedPlanId = ref('')
 const confirmDialogOpen = ref(false)
 const confirmCancelDialogOpen = ref(false)
+const selectedCourseId = ref('')
 const isUpgrade = ref(false)
-const currentPlan = computed(() => 
-  mockSubscriptionPlans.find(p => p.id === mockUserSubscription.planId)
+
+// Get current subscription for the selected course
+const currentSubscription = computed(() => 
+  courseSubscriptions.value.find(s => s.courseId === (selectedCourseId.value || props.courseId))
 )
+
+// Get the current plan details
+const currentPlan = computed(() => {
+  if (!currentSubscription.value) return null
+  return mockSubscriptionPlans.find(p => p.id === currentSubscription.value.planId)
+})
+
+// Get the selected plan details
 const selectedPlan = computed(() => 
   mockSubscriptionPlans.find(p => p.id === selectedPlanId.value)
 )
 
 const formattedRenewalDate = computed(() => {
-  const date = new Date(mockUserSubscription.currentPeriodEnd)
+  if (!currentSubscription.value) return ''
+  const date = new Date(currentSubscription.value.currentPeriodEnd)
   return date.toLocaleDateString('en-US', { 
     year: 'numeric', 
     month: 'long', 
@@ -32,8 +53,8 @@ const formattedRenewalDate = computed(() => {
 
 const priceDifference = computed(() => {
   if (!currentPlan.value || !selectedPlan.value) return 0
-  const currentPrice = currentPlan.value.price[billingCycle.value]
-  const newPrice = selectedPlan.value.price[billingCycle.value]
+  const currentPrice = currentSubscription.value.price
+  const newPrice = selectedPlan.value.price.monthly
   return newPrice - currentPrice
 })
 
@@ -52,19 +73,22 @@ const effectiveDate = computed(() => {
 const form = useForm({
   validationSchema: toTypedSchema(subscriptionUpdateSchema),
   initialValues: {
-    planId: mockUserSubscription.planId,
-    billingCycle: 'monthly',
+    planId: '',
+    courseId: props.courseId,
     termsAccepted: false
   }
 })
 
 function selectPlan(plan: SubscriptionPlan) {
-  if (plan.id === mockUserSubscription.planId) return
+  if (!currentSubscription.value || plan.id === currentSubscription.value.planId) return
+  
+  selectedCourseId.value = currentSubscription.value.courseId
   selectedPlanId.value = plan.id
   form.setFieldValue('planId', plan.id)
+  form.setFieldValue('courseId', currentSubscription.value.courseId)
   
   // Determine if this is an upgrade or downgrade
-  const currentPlanIndex = mockSubscriptionPlans.findIndex(p => p.id === mockUserSubscription.planId)
+  const currentPlanIndex = mockSubscriptionPlans.findIndex(p => p.id === currentSubscription.value.planId)
   const newPlanIndex = mockSubscriptionPlans.findIndex(p => p.id === plan.id)
   
   isUpgrade.value = newPlanIndex > currentPlanIndex
@@ -73,22 +97,21 @@ function selectPlan(plan: SubscriptionPlan) {
   confirmDialogOpen.value = true
 }
 
-function toggleBillingCycle() {
-  billingCycle.value = billingCycle.value === 'monthly' ? 'annually' : 'monthly'
-  form.setFieldValue('billingCycle', billingCycle.value)
-}
-
-function openCancelSubscriptionDialog() {
+function openCancelSubscriptionDialog(subscription) {
+  selectedCourseId.value = subscription.courseId
   confirmCancelDialogOpen.value = true
 }
 
 function cancelSubscription() {
   try {
     // In a real implementation, this would be an API call
-    console.log('Cancelling subscription')
+    console.log('Cancelling subscription for course', selectedCourseId.value)
     
     // Set status to pending cancellation at end of billing period
-    mockUserSubscription.cancelAtPeriodEnd = true
+    const subscription = courseSubscriptions.value.find(s => s.courseId === selectedCourseId.value)
+    if (subscription) {
+      subscription.cancelAtPeriodEnd = true
+    }
     
     // Show success message
     toast.success('Your subscription has been cancelled')
@@ -100,13 +123,13 @@ function cancelSubscription() {
   }
 }
 
-function cancelDowngrade() {
-  // Reset the downgrade state
-  mockUserSubscription.cancelAtPeriodEnd = false
-  mockUserSubscription.downgradeToId = undefined
+function cancelDowngrade(subscription) {
+  // Reset the cancellation state
+  subscription.cancelAtPeriodEnd = false
+  subscription.downgradeToId = undefined
   
   // Show success message
-  toast.success('Pending downgrade canceled')
+  toast.success('Pending cancellation canceled')
 }
 
 function getCheckIcon(included: boolean) {
@@ -125,18 +148,30 @@ const onSubmit = form.handleSubmit(
       
       const actionType = isUpgrade.value ? 'upgraded' : 'downgraded'
       
-      // Show success message
-      toast.success(`Subscription ${actionType} successfully`)
+      // Find the subscription to update
+      const subscription = courseSubscriptions.value.find(s => s.courseId === values.courseId)
+      if (!subscription) {
+        throw new Error('Subscription not found')
+      }
       
       // Handle subscription state updates differently based on upgrade vs downgrade
       if (isUpgrade.value) {
         // For upgrades, update plan immediately
-        mockUserSubscription.planId = values.planId
+        subscription.planId = values.planId
+        
+        // Update price based on the selected plan
+        const selectedPlan = mockSubscriptionPlans.find(p => p.id === values.planId)
+        if (selectedPlan) {
+          subscription.price = selectedPlan.price.monthly
+        }
       } else {
         // For downgrades, schedule change for end of billing cycle
-        mockUserSubscription.cancelAtPeriodEnd = true
-        mockUserSubscription.downgradeToId = values.planId
+        subscription.cancelAtPeriodEnd = true
+        subscription.downgradeToId = values.planId
       }
+      
+      // Show success message
+      toast.success(`Subscription ${actionType} successfully`)
       
       // Reset and close dialog
       confirmDialogOpen.value = false
@@ -154,166 +189,157 @@ const onSubmit = form.handleSubmit(
 <template>
   <div>
     <div class="mb-6">
-      <h3 class="text-xl font-medium">Subscription</h3>
+      <h3 class="text-xl font-medium">Course Subscriptions</h3>
       <p class="text-sm text-muted-foreground">
-        Manage your subscription and billing details
+        Manage your course subscriptions and billing details
       </p>
     </div>
     
-    <!-- Current Subscription Details -->
-    <div class="border rounded-lg mb-8">
-      <div class="border-b p-4">
-        <h4 class="font-medium">Current Plan</h4>
-      </div>
-      
-      <div class="p-4 space-y-4">
-        <!-- Plan details -->
-        <div class="grid grid-cols-3 gap-4">
-          <div>
-            <div class="text-sm text-muted-foreground">Plan</div>
-            <div class="font-medium">{{ currentPlan?.name }}</div>
-          </div>
-          <div>
-            <div class="text-sm text-muted-foreground">Billing Cycle</div>
-            <div class="font-medium capitalize">{{ billingCycle }}</div>
-          </div>
-          <div>
-            <div class="text-sm text-muted-foreground">Price</div>
-            <div class="font-medium">${{ currentPlan?.price[billingCycle].toFixed(2) }}/{{ billingCycle === 'monthly' ? 'mo' : 'yr' }}</div>
-          </div>
+    <!-- Current Subscriptions -->
+    <div v-if="courseSubscriptions.length > 0" class="space-y-6 mb-8">
+      <div 
+        v-for="subscription in courseSubscriptions" 
+        :key="subscription.id" 
+        class="border rounded-lg"
+      >
+        <div class="border-b p-4">
+          <h4 class="font-medium">{{ subscription.courseName }}</h4>
         </div>
         
-        <!-- Renewal info -->
-        <div>
-          <div class="text-sm text-muted-foreground">Renews On</div>
-          <div class="font-medium">{{ formattedRenewalDate }}</div>
-        </div>
-        
-        <!-- Pending changes notice -->
-        <div v-if="mockUserSubscription.cancelAtPeriodEnd && !mockUserSubscription.downgradeToId" class="bg-amber-50 border border-amber-200 rounded-md p-3 text-amber-800">
-          <div class="flex items-start">
-            <Icon name="i-heroicons-exclamation-triangle" class="h-5 w-5 mr-2 mt-0.5" />
+        <div class="p-4 space-y-4">
+          <!-- Plan details -->
+          <div class="grid grid-cols-3 gap-4">
             <div>
-              <div class="font-medium">Your subscription will be cancelled</div>
-              <p class="text-sm">
-                Your subscription will end on {{ formattedRenewalDate }}. You'll lose access to premium features after this date.
-              </p>
-              <Button variant="link" class="p-0 h-auto text-sm" @click="cancelDowngrade">
-                Keep my subscription
+              <div class="text-sm text-muted-foreground">Plan</div>
+              <div class="font-medium capitalize">{{ subscription.planId }}</div>
+            </div>
+            <div>
+              <div class="text-sm text-muted-foreground">Price</div>
+              <div class="font-medium">€{{ subscription.price.toFixed(2) }}/mo</div>
+            </div>
+            <div>
+              <div class="text-sm text-muted-foreground">Status</div>
+              <div class="font-medium capitalize">{{ subscription.status }}</div>
+            </div>
+          </div>
+          
+          <!-- Renewal info -->
+          <div>
+            <div class="text-sm text-muted-foreground">Renews On</div>
+            <div class="font-medium">
+              {{ new Date(subscription.currentPeriodEnd).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              }) }}
+            </div>
+          </div>
+          
+          <!-- Pending cancellation notice -->
+          <div v-if="subscription.cancelAtPeriodEnd && !subscription.downgradeToId" class="bg-amber-50 border border-amber-200 rounded-md p-3 text-amber-800">
+            <div class="flex items-start">
+              <Icon name="i-heroicons-exclamation-triangle" class="h-5 w-5 mr-2 mt-0.5" />
+              <div>
+                <div class="font-medium">Your subscription will be cancelled</div>
+                <p class="text-sm">
+                  Your subscription will end on {{ new Date(subscription.currentPeriodEnd).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  }) }}. You'll lose access to this course after this date.
+                </p>
+                <Button variant="link" class="p-0 h-auto text-sm" @click="cancelDowngrade(subscription)">
+                  Keep my subscription
+                </Button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Downgrade notice -->
+          <div v-if="subscription.cancelAtPeriodEnd && subscription.downgradeToId" class="bg-amber-50 border border-amber-200 rounded-md p-3 text-amber-800">
+            <div class="flex items-start">
+              <Icon name="i-heroicons-exclamation-triangle" class="h-5 w-5 mr-2 mt-0.5" />
+              <div>
+                <div class="font-medium">Your plan will change soon</div>
+                <p class="text-sm">
+                  On {{ new Date(subscription.currentPeriodEnd).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  }) }}, your plan will change to {{ mockSubscriptionPlans.find(p => p.id === subscription.downgradeToId)?.name }}.
+                </p>
+                <Button variant="link" class="p-0 h-auto text-sm" @click="cancelDowngrade(subscription)">
+                  Cancel plan change
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Available Plans -->
+        <div class="p-4 border-t space-y-4">
+          <h5 class="font-medium">Available Plans</h5>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div 
+              v-for="plan in mockSubscriptionPlans" 
+              :key="plan.id"
+              :class="[
+                'relative border rounded-lg p-4 transition-all',
+                plan.id === subscription.planId ? 'border-primary bg-primary/5' : 'hover:border-primary/50'
+              ]"
+            >
+              <!-- Current Plan Badge -->
+              <Badge 
+                v-if="plan.id === subscription.planId" 
+                class="absolute top-2 right-2"
+              >
+                Current
+              </Badge>
+              
+              <h5 class="text-lg font-medium">{{ plan.name }}</h5>
+              <div class="my-2">
+                <span class="text-xl font-bold">€{{ plan.price.monthly.toFixed(2) }}</span>
+                <span class="text-muted-foreground">/mo</span>
+              </div>
+              
+              <!-- Action Button -->
+              <Button 
+                v-if="plan.id !== subscription.planId" 
+                size="sm"
+                class="mt-2"
+                @click="() => { selectedCourseId = subscription.courseId; selectPlan(plan); }"
+              >
+                {{ plan.price.monthly > subscription.price ? 'Upgrade' : 'Downgrade' }}
+              </Button>
+              <Button 
+                v-else 
+                variant="outline" 
+                size="sm"
+                class="mt-2" 
+                disabled
+              >
+                Current Plan
               </Button>
             </div>
           </div>
         </div>
         
-        <!-- Downgrade notice -->
-        <div v-if="mockUserSubscription.cancelAtPeriodEnd && mockUserSubscription.downgradeToId" class="bg-amber-50 border border-amber-200 rounded-md p-3 text-amber-800">
-          <div class="flex items-start">
-            <Icon name="i-heroicons-exclamation-triangle" class="h-5 w-5 mr-2 mt-0.5" />
-            <div>
-              <div class="font-medium">Your plan will change soon</div>
-              <p class="text-sm">
-                On {{ formattedRenewalDate }}, your plan will change to {{ mockSubscriptionPlans.find(p => p.id === mockUserSubscription.downgradeToId)?.name }}.
-              </p>
-              <Button variant="link" class="p-0 h-auto text-sm" @click="cancelDowngrade">
-                Cancel plan change
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Subscription Actions -->
-      <div class="border-t p-4 bg-muted/30 flex justify-between items-center">
-        <div>
-          <Button variant="outline" @click="openCancelSubscriptionDialog">
+        <!-- Subscription Actions -->
+        <div class="border-t p-4 bg-muted/30 flex justify-end items-center">
+          <Button 
+            variant="outline" 
+            @click="openCancelSubscriptionDialog(subscription)"
+          >
             Cancel Subscription
           </Button>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-sm mr-2" :class="{ 'font-medium': billingCycle === 'monthly' }">Monthly</span>
-          <Switch 
-            :checked="billingCycle === 'annually'" 
-            @update:checked="toggleBillingCycle"
-          />
-          <span class="text-sm ml-2" :class="{ 'font-medium': billingCycle === 'annually' }">Annually</span>
-          <Badge variant="outline" class="ml-2">Save 20%</Badge>
         </div>
       </div>
     </div>
     
-    <!-- Available Plans -->
-    <div class="mb-8">
-      <h4 class="text-lg font-medium mb-4">Available Plans</h4>
-      <div class="grid md:grid-cols-3 gap-6">
-        <div 
-          v-for="plan in mockSubscriptionPlans" 
-          :key="plan.id"
-          :class="[
-            'relative border rounded-lg p-6 transition-all',
-            plan.id === mockUserSubscription.planId ? 'border-primary bg-primary/5' : 'hover:border-primary/50'
-          ]"
-        >
-          <!-- Current Plan Badge -->
-          <Badge 
-            v-if="plan.id === mockUserSubscription.planId" 
-            class="absolute top-3 right-3"
-          >
-            Current
-          </Badge>
-          
-          <!-- Popular Badge -->
-          <Badge 
-            v-if="plan.popular" 
-            variant="secondary"
-            class="absolute top-3 right-3"
-          >
-            Popular
-          </Badge>
-          
-          <h4 class="text-xl font-medium mb-2">{{ plan.name }}</h4>
-          <p class="text-sm text-muted-foreground mb-4">{{ plan.description }}</p>
-          
-          <!-- Price -->
-          <div class="mb-6">
-            <span class="text-3xl font-bold">${{ plan.price[billingCycle].toFixed(2) }}</span>
-            <span class="text-muted-foreground">/{{ billingCycle === 'monthly' ? 'mo' : 'yr' }}</span>
-          </div>
-          
-          <!-- Features -->
-          <ul class="space-y-3 mb-6">
-            <li 
-              v-for="feature in plan.features" 
-              :key="feature.name"
-              class="flex items-start"
-            >
-              <Icon 
-                :name="getCheckIcon(feature.included)" 
-                :class="['mr-2 h-5 w-5 mt-0.5', getCheckClass(feature.included)]" 
-              />
-              <div>
-                <span class="text-sm font-medium">{{ feature.name }}</span>
-              </div>
-            </li>
-          </ul>
-          
-          <!-- Action Button -->
-          <Button 
-            v-if="plan.id !== mockUserSubscription.planId" 
-            class="w-full"
-            @click="selectPlan(plan)"
-          >
-            {{ plan.price[billingCycle] > currentPlan?.price[billingCycle] ? 'Upgrade' : 'Downgrade' }}
-          </Button>
-          <Button 
-            v-else 
-            variant="outline" 
-            class="w-full" 
-            disabled
-          >
-            Current Plan
-          </Button>
-        </div>
-      </div>
+    <!-- No Subscriptions Message -->
+    <div v-else class="border rounded-lg p-6 mb-8 text-center">
+      <div class="text-muted-foreground mb-4">You don't have any active course subscriptions.</div>
+      <Button>Browse Courses</Button>
     </div>
     
     <!-- Change Plan Confirmation Dialog -->
@@ -324,7 +350,7 @@ const onSubmit = form.handleSubmit(
             {{ isUpgrade ? 'Upgrade' : 'Downgrade' }} to {{ selectedPlan?.name }}
           </DialogTitle>
           <DialogDescription>
-            Review your subscription change before confirming.
+            Review your subscription change for {{ courseSubscriptions.find(s => s.courseId === selectedCourseId)?.courseName }} before confirming.
           </DialogDescription>
         </DialogHeader>
         
@@ -334,13 +360,13 @@ const onSubmit = form.handleSubmit(
               <div class="border rounded-lg p-4">
                 <div class="text-sm text-muted-foreground mb-1">Current Plan</div>
                 <div class="font-medium">{{ currentPlan?.name }}</div>
-                <div class="text-sm mt-4">${{ currentPlan?.price[billingCycle].toFixed(2) }}/{{ billingCycle === 'monthly' ? 'mo' : 'yr' }}</div>
+                <div class="text-sm mt-4">€{{ currentSubscription?.price.toFixed(2) }}/mo</div>
               </div>
               
               <div class="border rounded-lg p-4 bg-primary/5 border-primary">
                 <div class="text-sm text-muted-foreground mb-1">New Plan</div>
                 <div class="font-medium">{{ selectedPlan?.name }}</div>
-                <div class="text-sm mt-4">${{ selectedPlan?.price[billingCycle].toFixed(2) }}/{{ billingCycle === 'monthly' ? 'mo' : 'yr' }}</div>
+                <div class="text-sm mt-4">€{{ selectedPlan?.price.monthly.toFixed(2) }}/mo</div>
               </div>
             </div>
             
@@ -396,7 +422,7 @@ const onSubmit = form.handleSubmit(
             Cancel Subscription
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to cancel your subscription?
+            Are you sure you want to cancel your subscription to {{ courseSubscriptions.find(s => s.courseId === selectedCourseId)?.courseName }}?
           </DialogDescription>
         </DialogHeader>
         
@@ -406,7 +432,7 @@ const onSubmit = form.handleSubmit(
             <AlertDescription>
               <ul class="list-disc pl-4 space-y-1">
                 <li>Your subscription will remain active until the end of your current billing period on {{ formattedRenewalDate }}.</li>
-                <li>After this date, you'll lose access to all premium features.</li>
+                <li>After this date, you'll lose access to this course.</li>
                 <li>You can resubscribe at any time.</li>
               </ul>
             </AlertDescription>
@@ -420,10 +446,11 @@ const onSubmit = form.handleSubmit(
               <SelectValue placeholder="Select a reason" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="completed">I've completed the course</SelectItem>
               <SelectItem value="too-expensive">It's too expensive</SelectItem>
-              <SelectItem value="not-using">I'm not using it enough</SelectItem>
-              <SelectItem value="missing-features">Missing features I need</SelectItem>
-              <SelectItem value="switching">Switching to a different service</SelectItem>
+              <SelectItem value="not-what-expected">Not what I expected</SelectItem>
+              <SelectItem value="technical-issues">Technical issues</SelectItem>
+              <SelectItem value="no-time">Don't have time right now</SelectItem>
               <SelectItem value="other">Other reason</SelectItem>
             </SelectContent>
           </Select>
