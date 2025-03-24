@@ -38,10 +38,15 @@ export const designConfig = {
             description: 'Modal windows and overlays',
           },
           {
+            to: '/components/review',
+            label: 'Review',
+            description: 'User reviews and ratings',
+          },
+          {
             to: '/components/subscription-plan',
             label: 'Subscription',
             description: 'Subscription management and billing',
-          },
+          }
         ],
       },
       domain: {
@@ -109,3 +114,27 @@ export const designConfig = {
     ],
   },
 }
+
+export const designSystem = [
+  {
+    title: 'Introduction',
+    href: '/components',
+  },
+  // ... other sections ...
+  {
+    title: 'Components',
+    items: [
+      {
+        title: 'Button',
+        href: '/components/button',
+      },
+      // ... other components ...
+      {
+        title: 'Review',
+        href: '/components/review',
+      },
+      // ... other components ...
+    ]
+  },
+  // ... other sections ...
+]
