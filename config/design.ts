@@ -39,8 +39,8 @@ export const designConfig = {
           },
           {
             to: '/components/subscription-plan',
-            label: 'Subscription Plan',
-            description: 'Plan comparison and management',
+            label: 'Subscription',
+            description: 'Subscription management and billing',
           },
         ],
       },
