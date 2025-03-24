@@ -91,3 +91,15 @@
     animation-delay: 4s;
   }
 }
+
+.py-1 {
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+}
+.px-2 {
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
+}
+code, kbd, samp, pre {
+  font-size: 0.8rem;
+}

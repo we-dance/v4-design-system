@@ -37,6 +37,11 @@ export const designConfig = {
             label: 'Dialog',
             description: 'Modal windows and overlays',
           },
+          {
+            to: '/components/tooltip',
+            label: 'Tooltip',
+            description: 'Contextual information on hover',
+          },
         ],
       },
       domain: {
