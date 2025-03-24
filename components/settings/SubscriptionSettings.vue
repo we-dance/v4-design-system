@@ -6,7 +6,8 @@ import { subscriptionUpdateSchema } from '~/schemas/subscription'
 import { 
   mockSubscriptionPlans,
   mockCourseSubscriptions,
-  type SubscriptionPlan 
+  type SubscriptionPlan,
+  type CourseSubscription 
 } from '~/data/mockSubscriptions'
 
 const props = defineProps({
@@ -33,7 +34,7 @@ const currentSubscription = computed(() =>
 // Get the current plan details
 const currentPlan = computed(() => {
   if (!currentSubscription.value) return null
-  return mockSubscriptionPlans.find(p => p.id === currentSubscription.value.planId)
+  return mockSubscriptionPlans.find(p => p.id === currentSubscription.value?.planId)
 })
 
 // Get the selected plan details
@@ -53,7 +54,7 @@ const formattedRenewalDate = computed(() => {
 
 const priceDifference = computed(() => {
   if (!currentPlan.value || !selectedPlan.value) return 0
-  const currentPrice = currentSubscription.value.price
+  const currentPrice = currentSubscription.value?.price ?? 0
   const newPrice = selectedPlan.value.price.monthly
   return newPrice - currentPrice
 })
@@ -88,7 +89,7 @@ function selectPlan(plan: SubscriptionPlan) {
   form.setFieldValue('courseId', currentSubscription.value.courseId)
   
   // Determine if this is an upgrade or downgrade
-  const currentPlanIndex = mockSubscriptionPlans.findIndex(p => p.id === currentSubscription.value.planId)
+  const currentPlanIndex = mockSubscriptionPlans.findIndex(p => p.id === currentSubscription.value?.planId)
   const newPlanIndex = mockSubscriptionPlans.findIndex(p => p.id === plan.id)
   
   isUpgrade.value = newPlanIndex > currentPlanIndex
@@ -97,7 +98,7 @@ function selectPlan(plan: SubscriptionPlan) {
   confirmDialogOpen.value = true
 }
 
-function openCancelSubscriptionDialog(subscription) {
+function openCancelSubscriptionDialog(subscription: CourseSubscription) {
   selectedCourseId.value = subscription.courseId
   confirmCancelDialogOpen.value = true
 }
@@ -118,12 +119,12 @@ function cancelSubscription() {
     
     // Close the dialog
     confirmCancelDialogOpen.value = false
-  } catch (error) {
-    toast.error(`Failed to cancel subscription: ${error.message}`)
+  } catch (error: any) {
+    toast.error(`Failed to cancel subscription: ${error?.message || 'Unknown error'}`)
   }
 }
 
-function cancelDowngrade(subscription) {
+function cancelDowngrade(subscription: CourseSubscription) {
   // Reset the cancellation state
   subscription.cancelAtPeriodEnd = false
   subscription.downgradeToId = undefined
@@ -176,8 +177,8 @@ const onSubmit = form.handleSubmit(
       // Reset and close dialog
       confirmDialogOpen.value = false
       
-    } catch (error) {
-      toast.error(`Failed to update subscription: ${error.message}`)
+    } catch (error: any) {
+      toast.error(`Failed to update subscription: ${error?.message || 'Unknown error'}`)
     }
   },
   (e) => {
@@ -370,7 +371,7 @@ const onSubmit = form.handleSubmit(
               </div>
             </div>
             
-            <Alert variant="info" class="mb-4">
+            <Alert class="mb-4">
               <AlertTitle>When will this change take effect?</AlertTitle>
               <AlertDescription>
                 <template v-if="isUpgrade">
@@ -427,7 +428,7 @@ const onSubmit = form.handleSubmit(
         </DialogHeader>
         
         <div class="py-4">
-          <Alert variant="warning" class="mb-4">
+          <Alert class="mb-4">
             <AlertTitle>Important information</AlertTitle>
             <AlertDescription>
               <ul class="list-disc pl-4 space-y-1">

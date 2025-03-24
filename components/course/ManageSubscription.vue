@@ -76,7 +76,7 @@ const subscriptionAge = computed(() => {
   const now = new Date();
   const startDate = new Date(props.subscription.currentPeriodStart);
   // Return age in hours
-  return Math.abs(now - startDate) / 36e5; // 36e5 is the number of milliseconds in an hour
+  return Math.abs(now.getTime() - startDate.getTime()) / 36e5; // 36e5 is the number of milliseconds in an hour
 });
 
 const isEligibleForMoneyBack = computed(() => {
@@ -142,8 +142,9 @@ function cancelSubscription() {
     
     // Close the dialog
     confirmCancelDialogOpen.value = false
-  } catch (error) {
-    toast.error(`Failed to cancel subscription: ${error.message}`)
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    toast.error(`Failed to cancel subscription: ${errorMessage}`)
   }
 }
 
@@ -187,8 +188,9 @@ function cancelWithRefund() {
     
     // Close the dialog
     confirmMoneyBackDialogOpen.value = false;
-  } catch (error) {
-    toast.error(`Failed to cancel subscription: ${error.message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    toast.error(`Failed to cancel subscription: ${errorMessage}`);
   }
 }
 
@@ -224,8 +226,9 @@ const onSubmit = form.handleSubmit(
       // Reset and close dialog
       confirmDialogOpen.value = false
       
-    } catch (error) {
-      toast.error(`Failed to update subscription: ${error.message}`)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to update subscription: ${errorMessage}`)
     }
   },
   (e) => {
@@ -395,7 +398,7 @@ const onSubmit = form.handleSubmit(
               </div>
             </div>
             
-            <Alert variant="info" class="mb-4">
+            <Alert class="mb-4">
               <AlertTitle>When will this change take effect?</AlertTitle>
               <AlertDescription>
                 <template v-if="isUpgrade">
@@ -452,7 +455,7 @@ const onSubmit = form.handleSubmit(
         </DialogHeader>
         
         <div class="py-4">
-          <Alert variant="warning" class="mb-4">
+          <Alert class="mb-4">
             <AlertTitle>Important information</AlertTitle>
             <AlertDescription>
               <ul class="list-disc pl-4 space-y-1">
@@ -522,7 +525,7 @@ const onSubmit = form.handleSubmit(
             </div>
           </div>
           
-          <Alert variant="success" class="mb-4">
+          <Alert class="mb-4">
             <AlertTitle>Full refund available</AlertTitle>
             <AlertDescription>
               <ul class="list-disc pl-4 space-y-1">

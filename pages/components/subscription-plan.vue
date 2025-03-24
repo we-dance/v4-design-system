@@ -112,7 +112,7 @@ const courseSubscriptions = [
             <div class="border rounded-lg p-6 bg-gray-50">
               <div class="mb-4">
                 <div class="flex items-center gap-2 mb-1">
-                  <Badge variant="success" class="bg-green-100 text-green-800 hover:bg-green-100">Active</Badge>
+                  <Badge variant="outline" class="bg-green-100 text-green-800 hover:bg-green-100">Active</Badge>
                   <div class="text-sm text-muted-foreground">Premium Plan</div>
                 </div>
                 <div class="text-sm text-muted-foreground mb-4">Renews on January 15, 2024</div>
@@ -376,7 +376,7 @@ const courseSubscriptions = [
             </div>
             
             <div class="py-4">
-              <Alert variant="warning" class="mb-4">
+              <Alert class="mb-4">
                 <AlertTitle>Important information</AlertTitle>
                 <AlertDescription>
                   <ul class="list-disc pl-4 space-y-1">
@@ -438,7 +438,7 @@ const courseSubscriptions = [
                 </div>
               </div>
               
-              <Alert variant="success" class="mb-4">
+              <Alert class="mb-4">
                 <AlertTitle>Full refund available</AlertTitle>
                 <AlertDescription>
                   <ul class="list-disc pl-4 space-y-1">
