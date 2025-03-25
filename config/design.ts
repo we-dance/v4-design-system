@@ -42,6 +42,11 @@ export const designConfig = {
             label: 'Review',
             description: 'User reviews and ratings',
           },
+          {
+            to: '/components/subscription-plan',
+            label: 'Subscription',
+            description: 'Subscription management and billing',
+          }
         ],
       },
       domain: {
